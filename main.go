@@ -11,16 +11,13 @@ import (
 	"time"
 )
 
-type Food struct {
-	Id           int64   `json:"id" gorm:"column:id"`
-	RestaurantId int64   `json:"restaurant_id" gorm:"column:restaurant_id"`
-	CategoryId   int64   `json:"category_id" gorm:"column:category_id"`
-	Name         string  `json:"name" gorm:"column:name"`
-	Description  string  `json:"description" gorm:"column:description"`
-	Price        float64 `json:"price" gorm:"column:price"`
+type AirPort struct {
+	Id   int64  `json:"id" gorm:"column:id"`
+	Code string `json:"code" gorm:"column:code"`
+	Name string `json:"name" gorm:"column:name"`
 }
 
-const KEY_REDIS = "ronin_foods"
+const KEY_REDIS = "ronin_airports"
 
 func main() {
 
@@ -33,27 +30,28 @@ func main() {
 	if err != nil {
 		log.Println("Err connect redis")
 	}
-	var foods []Food
+	var airports []AirPort
 
 	// Get data from redis first
-	errGetFromRds := GetDatRedis(context.Background(), KEY_REDIS, &foods, rds)
+	errGetFromRds := GetDatRedis(context.Background(), KEY_REDIS, &airports, rds)
 	if errGetFromRds != nil {
 		log.Println("Error get data from redis")
 	}
 
-	if len(foods) > 0 {
+	if len(airports) > 0 {
 		fmt.Println("=======>>>>>>> DATA get from cache")
+		fmt.Println(airports)
 		// Response data
 		return
 	}
 
-	errGet := dbCon.Model(Food{}).Find(&foods).Error
+	errGet := dbCon.Model(AirPort{}).Find(&airports).Error
 	if errGet != nil {
 		fmt.Println("Err get list")
 	}
 
 	// caching data to redis
-	errRds := SetDataToRedis(context.Background(), foods, KEY_REDIS, time.Hour*24, rds)
+	errRds := SetDataToRedis(context.Background(), airports, KEY_REDIS, time.Hour*24, rds)
 	if errRds != nil {
 		log.Fatal("Err set data to redis")
 	}
