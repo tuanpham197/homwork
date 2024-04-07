@@ -1,8 +1,10 @@
 package main
 
 import (
-	"context"
+	"Ronin/component/appctx"
+	"Ronin/middleware"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -11,14 +13,6 @@ import (
 	"time"
 )
 
-type AirPort struct {
-	Id   int64  `json:"id" gorm:"column:id"`
-	Code string `json:"code" gorm:"column:code"`
-	Name string `json:"name" gorm:"column:name"`
-}
-
-const KEY_REDIS = "ronin_airports"
-
 func main() {
 
 	dbCon, errDb := connectDBWithRetry(1)
@@ -26,36 +20,18 @@ func main() {
 		log.Println("Err connect redis")
 	}
 
-	rds, err := connectRedis()
-	if err != nil {
-		log.Println("Err connect redis")
-	}
-	var airports []AirPort
+	appCtx := appctx.NewAppContext(dbCon, "nil")
 
-	// Get data from redis first
-	errGetFromRds := GetDatRedis(context.Background(), KEY_REDIS, &airports, rds)
-	if errGetFromRds != nil {
-		log.Println("Error get data from redis")
-	}
+	route := gin.Default()
 
-	if len(airports) > 0 {
-		fmt.Println("=======>>>>>>> DATA get from cache")
-		fmt.Println(airports)
-		// Response data
-		return
-	}
+	route.Static("static", "static")
 
-	errGet := dbCon.Model(AirPort{}).Find(&airports).Error
-	if errGet != nil {
-		fmt.Println("Err get list")
-	}
+	route.Use(middleware.Recover(appCtx))
 
-	// caching data to redis
-	errRds := SetDataToRedis(context.Background(), airports, KEY_REDIS, time.Hour*24, rds)
-	if errRds != nil {
-		log.Fatal("Err set data to redis")
-	}
-	fmt.Println("=======>>>>>>>>>> Data get from database")
+	v1 := route.Group("/booking-service/api/v1")
+	setupBookingRoute(appCtx, v1)
+
+	route.Run()
 }
 
 func connectDBWithRetry(times int) (*gorm.DB, error) {
