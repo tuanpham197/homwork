@@ -1,8 +1,8 @@
 package mysql
 
 import (
-	"Ronin/modules/booking/entity"
-	"Ronin/modules/booking/service"
+	"Ronin/internal/booking/entity"
+	"Ronin/internal/booking/service"
 	"context"
 
 	"gorm.io/gorm"

@@ -2,9 +2,9 @@ package main
 
 import (
 	"Ronin/component/appctx"
-	"Ronin/modules/booking/controller/httpapi"
-	mysqlbooking "Ronin/modules/booking/infras/mysql"
-	serviceBooking "Ronin/modules/booking/service"
+	"Ronin/internal/booking/controller/httpapi"
+	mysqlbooking "Ronin/internal/booking/infras/mysql"
+	serviceBooking "Ronin/internal/booking/service"
 	"github.com/gin-gonic/gin"
 )
 

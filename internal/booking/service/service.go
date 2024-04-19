@@ -1,7 +1,7 @@
 package service
 
 import (
-	"Ronin/modules/booking/entity"
+	"Ronin/internal/booking/entity"
 	"context"
 )
 

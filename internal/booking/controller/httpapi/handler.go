@@ -1,8 +1,8 @@
 package httpapi
 
 import (
-	"Ronin/modules/booking/entity"
-	"Ronin/modules/booking/service"
+	"Ronin/internal/booking/entity"
+	"Ronin/internal/booking/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
