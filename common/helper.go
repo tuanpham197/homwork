@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/redis/go-redis/v9"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -49,4 +50,9 @@ func SetDataToRedis(ctx context.Context, data interface{}, key string, expireTim
 	}
 
 	return nil
+}
+
+func CheckExistsRole(roles []string, role string) bool {
+	rolesStr := strings.Join(roles, ",")
+	return strings.Contains(rolesStr, role)
 }

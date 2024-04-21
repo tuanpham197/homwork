@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"strings"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -92,7 +93,7 @@ func (s service) Login(ctx context.Context, userLogin request.UserLogin) (*reque
 	//}()
 	// set redis
 	key := fmt.Sprintf("user_info:%s", user.Id)
-	errRds := commonapp.SetDataToRedis(ctx, user, key, commonapp.AccessTokenExpireDuration, s.rds)
+	errRds := commonapp.SetDataToRedis(ctx, user, key, time.Hour, s.rds)
 	if errRds != nil {
 		return nil, errRds
 	}

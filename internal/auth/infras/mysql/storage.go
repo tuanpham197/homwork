@@ -4,7 +4,6 @@ import (
 	"Ronin/internal/auth/services"
 	"Ronin/internal/auth/services/entity"
 	"Ronin/internal/auth/services/request"
-	auth_util "Ronin/pkg/utils/auth"
 	"context"
 	"errors"
 
@@ -105,7 +104,7 @@ func (repo mysqlRepo) AssignRoleUser(ctx context.Context, reqRole request.Assign
 		return false, errUser
 	}
 
-	var roles []auth_util.Role
+	var roles []entity.Role
 	errRole := db.Find(&roles, reqRole.Roles).Error
 	if errRole != nil || len(roles) < 1 {
 		return false, errors.New("not found role to assign")

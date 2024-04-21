@@ -10,6 +10,38 @@ import (
 	"gorm.io/gorm"
 )
 
+type Key struct {
+	Id               int        `json:"id" gorm:"column:id;"`
+	UserId           *uuid.UUID `json:"user_id" gorm:"column:user_id"`
+	User             User       `json:"user" gorm:"foreignKey:Id;references:UserId"`
+	PublicKey        string     `json:"public_key" gorm:"column:public_key;"`
+	PrivateKey       string     `json:"private_key" gorm:"column:private_key"`
+	RefreshToken     *string    `json:"refresh_token" gorm:"column:refresh_token;"`
+	RefreshTokenUsed *[]string  `json:"refresh_token_used" gorm:"column:refresh_token_used"`
+}
+
+func (k *Key) TableName() string {
+	return "keys"
+}
+
+type Permission struct {
+	ID        uint       `json:"id" gorm:"primaryKey"`
+	Name      string     `json:"name"`
+	GuardName string     `json:"guard_name"`
+	Role      []Role     `json:"roles" gorm:"many2many:role_has_permissions;"`
+	CreatedAt *time.Time `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt *time.Time `json:"updated_at" gorm:"autoUpdateTime"`
+}
+
+type Role struct {
+	ID          uint         `json:"id" gorm:"primaryKey"`
+	Name        string       `json:"name"`
+	GuardName   string       `json:"guard_name" mapstructure:"guard_name"`
+	Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:role_has_permissions;"`
+	CreatedAt   *time.Time   `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   *time.Time   `json:"updated_at" gorm:"autoUpdateTime"`
+}
+
 type User struct {
 	Id                 uuid.UUID  `json:"id" gorm:"size:191;primary_key"`
 	UserName           string     `json:"username" gorm:"size:255;"`
@@ -21,8 +53,8 @@ type User struct {
 	Salt               string     `json:"-" gorm:"size:30;"`
 	Avatar             string     `json:"avatar" gorm:"size:255;"`
 	commonapp.SQLModel `json:",inline"`
-	Roles              []entity.Role       `json:"roles,omitempty" gorm:"many2many:model_has_roles;joinForeignKey:ModelId"`
-	Permissions        []entity.Permission `json:"permissions,omitempty" gorm:"many2many:model_has_permissions;joinForeignKey:ModelId"`
+	Roles              []Role       `json:"roles,omitempty" gorm:"many2many:model_has_roles;joinForeignKey:ModelId"`
+	Permissions        []Permission `json:"permissions,omitempty" gorm:"many2many:model_has_permissions;joinForeignKey:ModelId"`
 }
 
 func NewUser(id uuid.UUID, username, lastName, firstName, email, password string, result *time.Time) User {

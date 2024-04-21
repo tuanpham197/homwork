@@ -1,12 +1,13 @@
 package auth_util
 
 import (
-	commonapp "Ronin/common"
+	"Ronin/internal/auth/services/entity"
 	"Ronin/internal/auth/services/request"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/ssh"
 	"os"
@@ -20,24 +21,6 @@ var (
 type Keys struct {
 	PublicKey  string
 	PrivateKey string
-}
-
-type Permission struct {
-	ID        uint       `json:"id" gorm:"primaryKey"`
-	Name      string     `json:"name"`
-	GuardName string     `json:"guard_name"`
-	Role      []Role     `json:"roles" gorm:"many2many:role_has_permissions;"`
-	CreatedAt *time.Time `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt *time.Time `json:"updated_at" gorm:"autoUpdateTime"`
-}
-
-type Role struct {
-	ID          uint                `json:"id" gorm:"primaryKey"`
-	Name        string              `json:"name"`
-	GuardName   string              `json:"guard_name" mapstructure:"guard_name"`
-	Permissions []entity.Permission `json:"permissions,omitempty" gorm:"many2many:role_has_permissions;"`
-	CreatedAt   *time.Time          `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt   *time.Time          `json:"updated_at" gorm:"autoUpdateTime"`
 }
 
 type Payload struct {
@@ -55,7 +38,7 @@ type CustomClaims struct {
 
 // GenerateAccessToken Generate an access token
 func GenerateAccessToken(payload *Payload) (string, error) {
-	expirationTime := jwt.NewNumericDate(time.Now().Add(commonapp.AccessTokenExpireDuration))
+	expirationTime := jwt.NewNumericDate(time.Now().Add(time.Minute * 60))
 
 	claims := CustomClaims{
 		UserID: payload.UserID,
@@ -71,7 +54,7 @@ func GenerateAccessToken(payload *Payload) (string, error) {
 
 // Generate a refresh token
 func GenerateRefreshToken(payload *Payload) (string, error) {
-	expirationTime := jwt.NewNumericDate(time.Now().Add(commonapp.RefreshTokenExpireDuration))
+	expirationTime := jwt.NewNumericDate(time.Now().Add(time.Hour * 7))
 
 	claims := CustomClaims{
 		UserID: payload.UserID,

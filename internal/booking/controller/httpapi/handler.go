@@ -18,7 +18,6 @@ func NewAPIController(s service.BookingUseCase) *apiController {
 func (api apiController) CreateBooking() func(c *gin.Context) {
 
 	return func(c *gin.Context) {
-
 		var request entity.BookingCreate
 
 		if err := c.ShouldBindJSON(&request); err != nil {

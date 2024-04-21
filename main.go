@@ -20,7 +20,12 @@ func main() {
 		log.Println("Err connect redis")
 	}
 
-	appCtx := appctx.NewAppContext(dbCon, "nil")
+	rds, errRds := connectRedis()
+	if errRds != nil {
+		log.Println("Err connect redis")
+	}
+
+	appCtx := appctx.NewAppContext(dbCon, "nil", rds)
 
 	route := gin.Default()
 
@@ -29,6 +34,7 @@ func main() {
 	route.Use(middleware.Recover(appCtx))
 
 	v1 := route.Group("/booking-service/api/v1")
+	setupAuthRoute(appCtx, v1)
 	setupBookingRoute(appCtx, v1)
 
 	route.Run()

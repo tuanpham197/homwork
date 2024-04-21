@@ -1,18 +1,18 @@
-package middleware
+package middlewareauth
 
 import (
 	sctx "Ronin/component/appctx"
-	mysqlRepoAuth "Ronin/internal/auth/infras/mysql"
 	"Ronin/pkg/contants"
 	"Ronin/pkg/utils/response"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"os"
 	"strings"
 )
 
-func TokenVerificationMiddleware(ctx sctx.ServiceContext) gin.HandlerFunc {
+func TokenVerificationMiddleware(ctx sctx.AppCtx) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		authorizationHeader := c.GetHeader("Authorization")
@@ -73,21 +73,6 @@ func TokenVerificationMiddleware(ctx sctx.ServiceContext) gin.HandlerFunc {
 			return
 		}
 		// get info user
-		repositoryAuth := mysqlRepoAuth.NewMySQLRepo(ctx.GetDBConnection(), ctx.GetRedisConnection())
-		tokenUser, errGet := repositoryAuth.GetTokenUser(c.Request.Context(), map[string]interface{}{
-			"user_id":    userId,
-			"token_sign": strings.Split(tokenString, ".")[2],
-		})
-		if errGet != nil {
-			c.JSON(http.StatusUnauthorized, response.ErrorResponse(http.StatusUnauthorized, "Asd", errGet))
-			c.Abort()
-			return
-		}
-		if tokenUser.Revoked == true {
-			c.JSON(http.StatusUnauthorized, response.ErrorResponse(http.StatusUnauthorized, constants.InvalidToken, err))
-			c.Abort()
-			return
-		}
 
 		// Set info to redis
 

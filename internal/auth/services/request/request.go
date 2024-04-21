@@ -1,6 +1,9 @@
 package request
 
-import "github.com/google/uuid"
+import (
+	"Ronin/internal/auth/services/entity"
+	"github.com/google/uuid"
+)
 
 type AssignRoleUser struct {
 	Roles []uint `json:"roles" binding:"required"`
