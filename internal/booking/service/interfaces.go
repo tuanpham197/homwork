@@ -9,6 +9,7 @@ type BookingUseCase interface {
 	CreateBooking(ctx context.Context, data *entity.BookingCreate) (*entity.Booking, error)
 	RemoveBooking(ctx context.Context, id int) (*entity.Booking, error)
 	GetListBooking(ctx context.Context) ([]*entity.Booking, error)
+	LookProduct(ctx context.Context, id int) (*entity.Product, error)
 }
 
 type BookingRepository interface {

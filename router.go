@@ -17,8 +17,8 @@ import (
 
 func setupBookingRoute(appCtx appctx.AppCtx, v1 *gin.RouterGroup) {
 
-	repo := mysqlbooking.NewMySQLRepo(appCtx.GetMainDBConnection())
-	biz := serviceBooking.NewService(repo)
+	repo := mysqlbooking.NewMySQLRepo(appCtx.GetMainDBConnection(), appCtx.GetRedisClient())
+	biz := serviceBooking.NewService(repo, appCtx.GetRedisClient())
 	api := httpapi.NewAPIController(biz)
 
 	v1.Use(middlewareauth.TokenVerificationMiddleware(appCtx), middleware.RoleMiddleware(appCtx, "admin"))
