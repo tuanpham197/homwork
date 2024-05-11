@@ -132,12 +132,4 @@ INSERT INTO `role_has_permissions` VALUES (1,1);
 UNLOCK TABLES;
 
 
-CREATE TABLE `bookings` (
-    `id` bigint unsigned NOT NULL primary key AUTO_INCREMENT,
-    `code` varchar(50) NOT NULL,
-    `total` bigint default 0,
-    `status` tinyint default 1,
-    `created_at` datetime(3) DEFAULT NULL,
-    `updated_at` datetime(3) DEFAULT NULL,
-    `deleted_at` datetime(3) DEFAULT NULL
-)
+

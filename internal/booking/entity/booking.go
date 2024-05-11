@@ -6,25 +6,20 @@ import (
 )
 
 type Booking struct {
-	Id            int64       `json:"id" form:"id"`
-	Code          string      `json:"code" form:"code"`
-	Total         float64     `json:"total" form:"total"`
-	PaymentStatus int8        `json:"payment_status" form:"payment_status"`
-	CreatedAt     time.Time   `json:"created_at" form:"created_at"`
-	UpdatedAt     time.Time   `json:"updated_at" form:"updated_at"`
-	Passengers    []Passenger `json:"passengers" form:"passengers"`
-	Tickets       []Ticket    `json:"tickets" form:"tickets"`
+	Id          int64     `json:"id" form:"id"`
+	Code        string    `json:"code" form:"code"`
+	Status      int8      `json:"status" form:"status"`
+	CustomerId  int64     `json:"customer_id" form:"customer_id"`
+	FlightId    int64     `json:"flight_id" form:"flight_id"`
+	BookingDate time.Time `json:"booking_date" form:"booking_date"`
+	Class       int       `json:"class" form:"class"`
+	CreatedAt   time.Time `json:"created_at" form:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at" form:"updated_at"`
+	Customer    *Customer `json:"customer" form:"customer"`
+	Tickets     []Ticket  `json:"tickets" form:"tickets"`
 }
 
-type BookingCreate struct {
-	Code          string    `json:"code" form:"code"`
-	Total         float64   `json:"total" form:"total"`
-	PaymentStatus int8      `json:"payment_status" form:"payment_status"`
-	CreatedAt     time.Time `json:"created_at" form:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at" form:"updated_at"`
-}
-
-type Passenger struct {
+type Customer struct {
 	Id      int64  `json:"id" form:"id"`
 	Name    string `json:"name" form:"name"`
 	Phone   string `json:"phone" form:"phone"`
@@ -34,18 +29,34 @@ type Passenger struct {
 	Country string `json:"country" form:"country"`
 }
 
+type BookingCreate struct {
+	Seat       string `json:"seat" form:"seat"`
+	FlightId   int64  `json:"flight_id" form:"flight_id"`
+	CustomerId int64  `json:"customer_id" form:"customer_id"`
+}
+
 type Ticket struct {
 	Id           int64     `json:"id" form:"id"`
-	Code         string    `json:"code" form:"code"`
 	Price        int       `json:"price" form:"price"`
 	Status       int64     `json:"status" form:"status"`
-	Seat         string    `json:"seat" form:"seat"`
-	BoardingTime time.Time `json:"boarding_time" form:"boardingTime"`
+	SeatNumber   string    `json:"seat_number" form:"seat_number"`
+	BoardingTime time.Time `json:"boarding_time" form:"boarding_time"`
 	Gate         int32     `json:"gate" form:"gate"`
-	From         string    `json:"from" form:"from"`
-	To           string    `json:"to" form:"to"`
 	Name         string    `json:"name" form:"name"`
-	FlightId     int64     `json:"flightId" form:"flightId"`
+	FlightId     int64     `json:"flight_id" form:"flight_id"`
+	BookingId    int64     `json:"booking_id" form:"booking_id"`
+	CustomerId   int64     `json:"customer_id" form:"customer_id"`
+	Customer     *Customer `json:"customer" form:"customer"`
+}
+
+type TicketCreate struct {
+	SeatNumber   string    `json:"seat_number" form:"seat_number"`
+	BoardingTime time.Time `json:"boarding_time" form:"boarding_time"`
+	Name         string    `json:"name" form:"name"`
+	FlightId     int64     `json:"flight_id" form:"flight_id"`
+	BookingId    int64     `json:"booking_id" form:"booking_id"`
+	CustomerId   int64     `json:"customer_id" form:"customer_id"`
+	Customer     *Customer `json:"customer" form:"customer"`
 }
 
 func (c *BookingCreate) TableName() string {
@@ -53,41 +64,10 @@ func (c *BookingCreate) TableName() string {
 }
 
 func (r *BookingCreate) Validate() error {
-	if r.Total < 0 {
-		return ErrorTotalInvalid
-	}
 
 	return nil
 }
 
 var (
-	ErrorTotalInvalid = errors.New("Total invalid")
+	ErrorTotalInvalid = errors.New("total invalid")
 )
-
-// Product là một struct đại diện cho sản phẩm
-type Product struct {
-	ID          uint `gorm:"primaryKey"`
-	Name        string
-	Description string
-	Price       float64
-	Stock       int
-	CategoryID  uint
-}
-
-// Order là một struct đại diện cho đơn hàng
-type Order struct {
-	ID          uint `gorm:"primaryKey"`
-	CustomerID  uint
-	OrderDate   string
-	TotalAmount float64
-	Status      string
-}
-
-// OrderItem là một struct đại diện cho mặt hàng trong đơn hàng
-type OrderItem struct {
-	ID        uint `gorm:"primaryKey"`
-	OrderID   uint
-	ProductID uint
-	Quantity  int
-	Price     float64
-}

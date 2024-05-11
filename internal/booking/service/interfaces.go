@@ -7,13 +7,9 @@ import (
 
 type BookingUseCase interface {
 	CreateBooking(ctx context.Context, data *entity.BookingCreate) (*entity.Booking, error)
-	RemoveBooking(ctx context.Context, id int) (*entity.Booking, error)
-	GetListBooking(ctx context.Context) ([]*entity.Booking, error)
-	LookProduct(ctx context.Context, id int) (*entity.Product, error)
 }
 
 type BookingRepository interface {
-	Create(ctx context.Context, data *entity.BookingCreate) (entity.Booking, error)
-	FindAll(ctx context.Context) ([]entity.Booking, error)
-	Delete(ctx context.Context, id int) error
+	Create(ctx context.Context, data *entity.BookingCreate) (*entity.Booking, error)
+	CreateTicket(ctx context.Context, data *entity.TicketCreate) (*entity.Ticket, error)
 }
